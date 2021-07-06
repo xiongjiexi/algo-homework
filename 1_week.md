@@ -266,3 +266,97 @@ func subarraySum(nums []int, k int) int {
     return cnt
 }
 ```
+
+
+
+## 双指针、滑动窗口
+
+### 167. 两数之和 II - 输入有序数组
+
+```
+
+给定一个已按照 升序排列  的整数数组 numbers ，请你从数组中找出两个数满足相加之和等于目标数 target 。
+
+函数应该以长度为 2 的整数数组的形式返回这两个数的下标值。numbers 的下标 从 1 开始计数 ，所以答案数组应当满足 1 <= answer[0] < answer[1] <= numbers.length 。
+
+你可以假设每个输入只对应唯一的答案，而且你不可以重复使用相同的元素。
+
+ 
+示例 1：
+
+输入：numbers = [2,7,11,15], target = 9
+输出：[1,2]
+解释：2 与 7 之和等于目标数 9 。因此 index1 = 1, index2 = 2 。
+示例 2：
+
+输入：numbers = [2,3,4], target = 6
+输出：[1,3]
+示例 3：
+
+输入：numbers = [-1,0], target = -1
+输出：[1,2]
+```
+
+
+
+双指针：
+```java
+class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+        int n = numbers.length;
+        int[] num = numbers;
+        int l = 0, r = n-1;
+
+        while (l < r) {
+            int sum = num[l]+num[r];
+            if (sum == target) return new int[]{l+1, r+1};
+
+            if (sum > target) r--;
+            if (sum < target) l++;
+        }
+
+        return null;
+    }
+}
+```
+二分法：
+```java
+class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+        int[] nums = numbers;
+        int n = nums.length;
+        for (int i = 0; i < n-1; i++) {
+            int res = Arrays.binarySearch(nums, i+1, n, target-nums[i]);
+            if (res >= 0) return new int[]{i+1, res+1};
+        }
+        return null;
+    }
+}
+```
+
+## 单调栈、单调队列
+
+### 84. 柱状图中最大的矩形
+
+```java
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int[] hs = new int[heights.length+1];
+        hs[hs.length-1] = 0;
+        for (int i = 0; i < heights.length; i++) {
+            hs[i] = heights[i];
+        }
+        Stack<Integer> stack = new Stack<>();
+        int max = 0;
+        for (int i = 0; i < hs.length; i++) {
+            while (!stack.empty() && hs[stack.peek()] > hs[i]) {
+                int top = stack.pop();
+                int s = hs[top]*(i-(stack.empty()?0:stack.peek()+1));
+                max = Math.max(max, s);
+            }
+            stack.push(i);
+        }
+        return max;
+    }
+}
+```
